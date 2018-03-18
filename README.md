@@ -1,4 +1,4 @@
-#### Planarsys backoffice devlayout
+#### Nest-server-starter
  1. install docker
  2. Create config `src/config`
  3. chmod 755 entrypoint.sh
