@@ -1,11 +1,14 @@
+import { DatabaseModule } from './../database/database.module';
 import * as passport from 'passport';
 import { Module, NestModule, MiddlewaresConsumer, RequestMethod } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { JwtStrategy } from './passport/jwt.strategy';
 import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { authProviders } from './auth.providers';
+import { JwtStrategy } from './passport/jwt.strategy';
 
 @Module({
-  components: [AuthService, JwtStrategy],
+  imports: [DatabaseModule],
+  components: [AuthService, JwtStrategy, ...authProviders],
   controllers: [AuthController],
 })
 export class AuthModule implements NestModule {
