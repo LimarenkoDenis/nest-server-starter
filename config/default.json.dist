@@ -3,9 +3,9 @@
     "port": 8090
   },
   "dbConfig": {
-    "host": "mongodb://localhost/dev"
+    "host": "mongodb://mongodb:27017/cats"
   },
   "dbConfigTest": {
-    "host": "mongodb://localhost/test"
+    "host": "mongodb://mongodb:27017/cats"
   }
 }
