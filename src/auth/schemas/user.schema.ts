@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-export const UserSchema = new mongoose.Schema({
+export const userSchema: mongoose.Schema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
@@ -13,13 +13,8 @@ export const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6,
-    maxlength: 20,
-    validate: {
-      validator: (password: string) => /^[A-Za-z0-9!@#$^&-_+=;:,.?|`~<>',]{6,20}/.test(password),
-      message: '{VALUE} is not a valid password!',
-    },
   },
+  remember: Boolean,
   name: {
     type: String,
     required: true,
@@ -37,5 +32,4 @@ export const UserSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid surname!',
     },
   },
-  hash: String,
 });

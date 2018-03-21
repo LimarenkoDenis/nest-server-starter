@@ -1,6 +1,6 @@
 import { DatabaseModule } from './../database/database.module';
 import * as passport from 'passport';
-import { Module, NestModule, MiddlewaresConsumer, RequestMethod } from '@nestjs/common';
+import { MiddlewaresConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { authProviders } from './auth.providers';

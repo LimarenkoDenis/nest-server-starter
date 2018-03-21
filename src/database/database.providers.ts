@@ -13,7 +13,7 @@ export const databaseProviders: any = [
 
       switch (process.env.NODE_ENV) {
         case 'test': {
-          const { host } = config.get('dbConfigTest') as { host: string };
+          const { host }: Config['dbConfigTest'] = config.get('dbConfigTest');
           const mockgoose: Mockgoose = new Mockgoose(mongoose);
 
           mockgoose.helper.setDbVersion('3.4.3');
@@ -22,7 +22,7 @@ export const databaseProviders: any = [
         }
 
         default: {
-          const { host } = config.get('dbConfig') as { host: string };
+          const { host }: Config['dbConfig'] = config.get('dbConfig');
           await mongoose.connect(host);
         }
       }

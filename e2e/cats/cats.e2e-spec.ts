@@ -18,13 +18,12 @@ describe('Cats', () => {
   });
 
   it(`/POST insert cat`, () => {
+    // expect((1)).toBe(1);
+    console.log(324);
+
     return request(server)
-      .post('/cats')
-      .send({
-        name: 'Tiger',
-        age: 2,
-        breed: 'Russian Blue',
-      })
+      .get('/cats')
+      .send([])
       .expect(201);
   });
 

@@ -1,21 +1,21 @@
 import { Model } from 'mongoose';
-import * as mongoose from 'mongoose';
 import { Component, Inject } from '@nestjs/common';
-import { Cat } from './interfaces/cat.interface';
+import { ICat } from './interfaces/cat.interface';
 import { CreateCatDto } from './dto/create-cat.dto';
 
 @Component()
 export class CatsService {
   public constructor(
-    @Inject('CatModelToken') private readonly _catModel: Model<Cat>,
+    @Inject('CatModelToken') private readonly _catModel: Model<ICat>,
   ) {}
 
-  public async getCats(): Promise<Cat[]> {
+  public async getCats(): Promise<ICat[]> {
     return await this._catModel.find().exec();
   }
 
-  public async getCat(query): Promise<Cat | null> {
-    let cat: Cat | null;
+  // tslint:disable-next-line: no-any
+  public async getCat(query: any): Promise<ICat | null> {
+    let cat: ICat | null;
     try {
       cat = await this._catModel.findOne(query);
     } catch (err) {
@@ -26,8 +26,8 @@ export class CatsService {
     return cat;
   }
 
-  public async createCat(createCatDto: CreateCatDto): Promise<Cat> {
-    const createdCat = new this._catModel(createCatDto);
+  public async createCat(createCatDto: CreateCatDto): Promise<ICat> {
+    const createdCat: ICat = new this._catModel(createCatDto);
     return await createdCat.save();
   }
 

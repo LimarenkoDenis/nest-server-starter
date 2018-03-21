@@ -1,8 +1,11 @@
 import { CreateUserDto } from './dto/create-user.dto';
-import { Controller, Post, HttpStatus, HttpCode, Get, Body, Res } from '@nestjs/common';
-import { ApiUseTags, ApiBearerAuth, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { LoginUserDto } from './dto/login-user.dto';
+import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
-import { User } from './interfaces/user.interface';
+import { IUserData } from './interfaces/user.interface';
+import { Response } from 'express';
 
 @ApiUseTags('auth')
 @Controller('auth')
@@ -11,34 +14,28 @@ export class AuthController {
     private readonly _authService: AuthService,
   ) {}
 
-  @Post('token')
-  @HttpCode(HttpStatus.OK)
-  public async getToken(): Promise<{ expires_in: number, access_token: string }> {
-    return await this._authService.createToken();
-  }
-
   @Get('authorized')
   @ApiBearerAuth()
   @ApiOperation({ title: 'Authorized route' })
-  @ApiResponse({ status: 201, description: '' })
-  @ApiResponse({ status: 403, description: 'Unauthorized' })
-  public async authorized(): Promise<void> {
-    // tslint:disable-next-line
-    console.log('Authorized route...');
+  @ApiResponse({ status: HttpStatus.OK, description: '' })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Unauthorized' })
+  public async authorized(@Res() res: Response): Promise<Response> {
+    return res.status(HttpStatus.OK).json({ data: 'Success' });
   }
 
   @Post('signup')
   @ApiOperation({ title: 'User sign up (create user)' })
-  @ApiResponse({ status: 201, description: 'The record has been successfully created.' })
-  @ApiResponse({ status: 401, description: 'The record already exists' })
-  public async create(@Body() createUserDto: CreateUserDto, @Res() res) {
-    let newUser: User;
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'The record has been successfully created.' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'The record already exists' })
+  public async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Response> {
+    let newUser: IUserData;
     try {
-      const user: User | null = await this._authService.getUser({ email: createUserDto.email });
+      const user: IUserData | null = await this._authService.getUser({ email: createUserDto.email });
       if (user) {
-        return res.status(401).json({ data: { message: 'This user already exists' }});
+        return res.status(HttpStatus.CONFLICT).json({ data: { message: 'This user already exists' }});
       }
-      newUser = await this._authService.createUser(createUserDto);
+      const hash: string = await bcrypt.hash(createUserDto.password, 10);
+      newUser = await this._authService.createUser({...createUserDto, password: hash});
     } catch (err) {
       return res.status(HttpStatus.BAD_REQUEST).json({ data: err });
     }
@@ -46,4 +43,21 @@ export class AuthController {
     return res.status(HttpStatus.OK).json({ data: newUser });
   }
 
+  @Post('signin')
+  @ApiOperation({ title: 'User sign in' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'User with token' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Wrong login or password' })
+  public async signIn(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<Response> {
+    let user: IUserData | null;
+    try {
+      user = await this._authService.getUserWithToken({ email: loginUserDto.email });
+    } catch (err) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ data: err });
+    }
+    if (!user || !await bcrypt.compare(loginUserDto.password, user.password)) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ data: { message: 'UNAUTHORIZED' } });
+    }
+
+    return res.status(HttpStatus.OK).json({ data: user});
+  }
 }
