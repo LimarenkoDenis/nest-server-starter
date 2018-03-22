@@ -28,19 +28,20 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'The record has been successfully created.' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'The record already exists' })
   public async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Response> {
-    let newUser: IUserData;
+    let userWithToken: IUserData;
     try {
       const user: IUserData | null = await this._authService.getUser({ email: createUserDto.email });
       if (user) {
         return res.status(HttpStatus.CONFLICT).json({ data: { message: 'This user already exists' }});
       }
       const hash: string = await bcrypt.hash(createUserDto.password, 10);
-      newUser = await this._authService.createUser({...createUserDto, password: hash});
+      await this._authService.createUser({...createUserDto, password: hash});
+      userWithToken = await this._authService.getUserWithToken({ email: createUserDto.email });
     } catch (err) {
       return res.status(HttpStatus.BAD_REQUEST).json({ data: err });
     }
 
-    return res.status(HttpStatus.OK).json({ data: newUser });
+    return res.status(HttpStatus.OK).json({ data: userWithToken });
   }
 
   @Post('signin')
