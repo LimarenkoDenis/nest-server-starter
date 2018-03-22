@@ -13,5 +13,13 @@
   },
   "jwtConf": {
     "secret": "cats"
+  },
+  "mysqlConifg": {
+    dialect: 'mysql',
+    host: 'localhost',
+    port: 3306,
+    username: 'example',
+    password: 'example',
+    database: 'example',
   }
 }

@@ -1,17 +1,16 @@
 import * as jwt from 'jsonwebtoken';
-import { Model } from 'mongoose';
 import { Component, Inject } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as config from 'config';
-import { IUserData, IUserModel } from './interfaces/user.interface';
+import { User } from './schemas/user.entity';
 
 @Component()
 export class AuthService {
   public constructor(
-    @Inject('UserModelToken') private readonly _userModel: Model<IUserModel>,
+    @Inject('UserModelToken') private readonly _userModel: typeof User,
   ) {}
 
-  public async createToken(user: IUserData): Promise<IUserData> {
+  public async createToken(user: UserData): Promise<UserData> {
     const { time }: Config['expireTime'] = config.get('expireTime');
     const { secret }: Config['jwtConf'] = config.get('jwtConf');
     const expiresIn: number = Date.now() + time;
@@ -32,24 +31,22 @@ export class AuthService {
   }
 
   public async validateUser(email: string): Promise<boolean> {
-    const user: IUserData | null = await this.getUser({email});
-
+    const user: UserData | null = await this.getUser({email});
     if (!user) {
       return false;
     }
     return true;
   }
 
-  public async createUser(createUserDto: CreateUserDto): Promise<IUserModel> {
-    const createdUser: IUserModel = new this._userModel(createUserDto);
-    return await createdUser.save();
+  public async createUser(createUserDto: CreateUserDto): Promise<User> {
+    return await this._userModel.build<User>(createUserDto).save();
   }
 
   // tslint:disable-next-line
-  public async getUser(query: any): Promise<IUserData | null> {
-    let user: IUserData | null;
+  public async getUser(query: any): Promise<User | null> {
+    let user: User | null;
     try {
-      user = await this._userModel.findOne(query);
+      user = await this._userModel.findOne({ where: query });
     } catch (err) {
       // tslint:disable-next-line
       console.log(err);
@@ -59,14 +56,8 @@ export class AuthService {
   }
 
   // tslint:disable-next-line: no-any
-  public async getUserWithToken(query: any, update?: any): Promise<IUserData> {
-    let user: IUserData;
-    if (update) {
-      user = await this._userModel.findOneAndUpdate(query, update, { new: true }).lean();
-    } else {
-      user = await this._userModel.findOne(query).lean();
-    }
-
+  public async getUserWithToken(query: any): Promise<UserData> {
+    const user: User = await this._userModel.findOne<User>({ where: query }) as User;
     return await this.createToken(user);
   }
 

@@ -1,33 +1,17 @@
-import * as mongoose from 'mongoose';
-import { Mockgoose } from 'mockgoose-fix';
 import * as config from 'config';
+import { Sequelize } from 'sequelize-typescript';
+import { Cat } from '../cats/schemas/cat.entity';
 
 // tslint:disable-next-line
 export const databaseProviders: any = [
   {
-    provide: 'DbConnectionToken',
-    useFactory: async (): Promise<mongoose.Connection> => {
-      // tslint:disable-next-line
-      (mongoose as any).Promise = global.Promise;
-      const dbConnection: mongoose.Connection = mongoose.connection;
-
-      switch (process.env.NODE_ENV) {
-        case 'test': {
-          const { host }: Config['dbConfigTest'] = config.get('dbConfigTest');
-          const mockgoose: Mockgoose = new Mockgoose(mongoose);
-
-          mockgoose.helper.setDbVersion('3.4.3');
-          mockgoose.prepareStorage().then(async () => await mongoose.connect(host));
-          break;
-        }
-
-        default: {
-          const { host }: Config['dbConfig'] = config.get('dbConfig');
-          await mongoose.connect(host);
-        }
-      }
-
-      return dbConnection;
+    provide: 'SequelizeToken',
+    useFactory: async () => {
+      const mysqlConifg: Config['mysqlConifg'] = config.get('mysqlConifg');
+      const sequelize: Sequelize = new Sequelize(mysqlConifg);
+      sequelize.addModels([Cat]);
+      await sequelize.sync();
+      return sequelize;
     },
   },
 ];

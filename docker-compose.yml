@@ -15,16 +15,18 @@ services:
     networks:
       - cats_network
 
-  mongodb:
-    container_name: cats-mongodb
-    build: docker/db
+  database:
+    container_name: database
+    build: docker/mysql
     ports:
-      - 27017:27017
-    volumes:
-      - ./.data/mongodb:/data/db
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: example
+      MYSQL_USER: example
+      MYSQL_PASSWORD: example
     networks:
       - cats_network
-
 
 networks:
   cats_network:
