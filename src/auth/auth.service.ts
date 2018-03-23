@@ -15,10 +15,9 @@ export class AuthService {
     const { secret }: Config['jwtConf'] = config.get('jwtConf');
     const expiresIn: number = Date.now() + time;
 
-    const payload: { login: string | undefined, expiresIn: number, isRemembered: boolean | undefined } = {
+    const payload: { login: string | undefined, expiresIn: number } = {
       login: user.email,
       expiresIn,
-      isRemembered: user.remember,
     };
 
     const accessToken: string = jwt.sign(payload, secret, { expiresIn });
@@ -31,15 +30,16 @@ export class AuthService {
   }
 
   public async validateUser(email: string): Promise<boolean> {
-    const user: UserData | null = await this.getUser({email});
+    const user: UserData | null = await this._userModel.findOne({ where: {email} });
     if (!user) {
       return false;
     }
     return true;
   }
 
-  public async createUser(createUserDto: CreateUserDto): Promise<User> {
-    return await this._userModel.build<User>(createUserDto).save();
+  public async createUser(createUserDto: CreateUserDto): Promise<UserData> {
+    const user: User = await this._userModel.build<User>(createUserDto).save();
+    return await this.createToken(user.dataValues as User);
   }
 
   // tslint:disable-next-line
@@ -58,7 +58,7 @@ export class AuthService {
   // tslint:disable-next-line: no-any
   public async getUserWithToken(query: any): Promise<UserData> {
     const user: User = await this._userModel.findOne<User>({ where: query }) as User;
-    return await this.createToken(user);
+    return await this.createToken(user.dataValues as UserData);
   }
 
 }

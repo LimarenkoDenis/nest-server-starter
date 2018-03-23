@@ -15,19 +15,6 @@ services:
     networks:
       - cats_network
 
-  database:
-    container_name: database
-    build: docker/mysql
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: example
-      MYSQL_USER: example
-      MYSQL_PASSWORD: example
-    networks:
-      - cats_network
-
 networks:
   cats_network:
     external: true

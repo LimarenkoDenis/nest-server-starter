@@ -2,12 +2,6 @@
   "appConfig": {
     "port": 8090
   },
-  "dbConfig": {
-    "host": "mongodb://mongodb:27017/cats"
-  },
-  "dbConfigTest": {
-    "host": "mongodb://mongodb:27017/cats"
-  },
   "expireTime": {
     "time": 60000000000
   },
