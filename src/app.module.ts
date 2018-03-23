@@ -10,6 +10,6 @@ export class ApplicationModule {
   public configure(consumer: MiddlewaresConsumer): void {
     consumer
       .apply(CorsMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL  });
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

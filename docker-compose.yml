@@ -15,17 +15,6 @@ services:
     networks:
       - cats_network
 
-  mongodb:
-    container_name: cats-mongodb
-    build: docker/db
-    ports:
-      - 27017:27017
-    volumes:
-      - ./.data/mongodb:/data/db
-    networks:
-      - cats_network
-
-
 networks:
   cats_network:
     external: true
