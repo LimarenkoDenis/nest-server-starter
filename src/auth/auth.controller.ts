@@ -2,10 +2,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Body, Controller, Get, HttpStatus, Post, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
-import { IUserData } from './interfaces/user.interface';
-import { Response } from 'express';
+import { User } from './schemas/user.entity';
 
 @ApiUseTags('auth')
 @Controller('auth')
@@ -28,15 +28,14 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'The record has been successfully created.' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'The record already exists' })
   public async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Response> {
-    let userWithToken: IUserData;
+    let userWithToken: UserData;
     try {
-      const user: IUserData | null = await this._authService.getUser({ email: createUserDto.email });
+      const user: User | null = await this._authService.getUser({ email: createUserDto.email });
       if (user) {
         return res.status(HttpStatus.CONFLICT).json({ data: { message: 'This user already exists' }});
       }
       const hash: string = await bcrypt.hash(createUserDto.password, 10);
-      await this._authService.createUser({...createUserDto, password: hash});
-      userWithToken = await this._authService.getUserWithToken({ email: createUserDto.email });
+      userWithToken = await this._authService.createUser({...createUserDto, password: hash});
     } catch (err) {
       return res.status(HttpStatus.BAD_REQUEST).json({ data: err });
     }
@@ -49,13 +48,13 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User with token' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Wrong login or password' })
   public async signIn(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<Response> {
-    let user: IUserData | null;
+    let user: UserData;
     try {
       user = await this._authService.getUserWithToken({ email: loginUserDto.email });
     } catch (err) {
       return res.status(HttpStatus.UNAUTHORIZED).json({ data: err });
     }
-    if (!user || !await bcrypt.compare(loginUserDto.password, user.password)) {
+    if (!user || user && !await bcrypt.compare(loginUserDto.password, user.password)) {
       return res.status(HttpStatus.UNAUTHORIZED).json({ data: { message: 'UNAUTHORIZED' } });
     }
 

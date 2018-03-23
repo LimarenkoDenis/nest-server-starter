@@ -1,11 +1,9 @@
-import { Connection } from 'mongoose';
-import { userSchema } from './schemas/user.schema';
+import { User } from './schemas/user.entity';
 
 // tslint:disable-next-line: no-any
 export const authProviders: any = [
   {
     provide: 'UserModelToken',
-    useFactory: (connection: Connection) => connection.model('User', userSchema),
-    inject: ['DbConnectionToken'],
+    useValue: User,
   },
 ];
