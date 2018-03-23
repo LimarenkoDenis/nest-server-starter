@@ -7,9 +7,7 @@ export class User extends Model<User> {
   @Column(DataType.STRING)
   public email: string;
 
-  @Length({min: 1, max: 20, msg: 'wrong length'})
-  @Column(DataType.STRING)
-  public password: string;
+  @Column public password: string;
 
   @Column public remember: boolean;
 
