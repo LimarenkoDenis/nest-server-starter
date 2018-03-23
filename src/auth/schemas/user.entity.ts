@@ -1,17 +1,14 @@
-import { Column, DataType, Length, Model, Table } from 'sequelize-typescript';
+import { Column, Entity } from 'typeorm';
 
-@Table
-export class User extends Model<User> {
+@Entity()
+export class User {
+  @Column() public email: string;
 
-  @Length({min: 3, max: 20, msg: 'wrong length'})
-  @Column(DataType.STRING)
-  public email: string;
+  @Column() public password: string;
 
-  @Column public password: string;
+  @Column() public remember: boolean;
 
-  @Column public remember: boolean;
+  @Column() public name: string;
 
-  @Column public name: string;
-
-  @Column public surname: string;
+  @Column() public surname: string;
 }

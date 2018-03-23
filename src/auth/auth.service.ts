@@ -1,13 +1,15 @@
 import * as jwt from 'jsonwebtoken';
-import { Component, Inject } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Component } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as config from 'config';
 import { User } from './schemas/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Component()
 export class AuthService {
   public constructor(
-    @Inject('UserModelToken') private readonly _userModel: typeof User,
+    @InjectRepository(User) private readonly _userModel: Repository<User>,
   ) {}
 
   public async createToken(user: UserData): Promise<UserData> {
@@ -30,7 +32,7 @@ export class AuthService {
   }
 
   public async validateUser(email: string): Promise<boolean> {
-    const user: UserData | null = await this._userModel.findOne({ where: {email} });
+    const user: UserData | undefined = await this._userModel.findOne({ email });
     if (!user) {
       return false;
     }
@@ -38,27 +40,27 @@ export class AuthService {
   }
 
   public async createUser(createUserDto: CreateUserDto): Promise<UserData> {
-    const user: User = await this._userModel.build<User>(createUserDto).save();
-    return await this.createToken(user.dataValues as User);
+    const user: User = await this._userModel.create(createUserDto);
+    return await this.createToken(user);
   }
 
   // tslint:disable-next-line
-  public async getUser(query: any): Promise<User | null> {
-    let user: User | null;
+  public async getUser(query: any): Promise<User | undefined> {
+    let user: User | undefined;
     try {
-      user = await this._userModel.findOne({ where: query });
+      user = await this._userModel.findOne(query);
     } catch (err) {
       // tslint:disable-next-line
       console.log(err);
-      user = null;
+      user = undefined;
     }
     return user;
   }
 
   // tslint:disable-next-line: no-any
   public async getUserWithToken(query: any): Promise<UserData> {
-    const user: User = await this._userModel.findOne<User>({ where: query }) as User;
-    return await this.createToken(user.dataValues as UserData);
+    const user: User = await this._userModel.findOne(query) as User;
+    return await this.createToken(user);
   }
 
 }

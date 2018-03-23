@@ -19,7 +19,7 @@ export class CatsController {
   public async create(@Body() createCatDto: CreateCatDto, @Res() res: Response): Promise<Response> {
     let newCat: Cat;
     try {
-      const cat: Cat | null = await this._catsService.getCat({ name: createCatDto.name });
+      const cat: Cat | undefined = await this._catsService.getCat({ name: createCatDto.name });
       if (cat) {
         return res.status(HttpStatus.UNAUTHORIZED).json({ data: { message: 'This cat already exists' }});
       }
@@ -51,7 +51,7 @@ export class CatsController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Cat object' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Not found' })
   public async findOne(@Param() params: RequestParamHandler, @Res() res: Response): Promise<Response> {
-    let cat: Cat | null;
+    let cat: Cat | undefined;
     try {
       cat = await this._catsService.getCat({ name: params.name });
     } catch (err) {

@@ -30,7 +30,7 @@ export class AuthController {
   public async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Response> {
     let userWithToken: UserData;
     try {
-      const user: User | null = await this._authService.getUser({ email: createUserDto.email });
+      const user: User | undefined = await this._authService.getUser({ email: createUserDto.email });
       if (user) {
         return res.status(HttpStatus.CONFLICT).json({ data: { message: 'This user already exists' }});
       }

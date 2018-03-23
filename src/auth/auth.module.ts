@@ -1,14 +1,14 @@
-import { DatabaseModule } from './../database/database.module';
 import * as passport from 'passport';
 import { MiddlewaresConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { authProviders } from './auth.providers';
 import { JwtStrategy } from './passport/jwt.strategy';
+import { User } from './schemas/user.entity';
 
 @Module({
-  imports: [DatabaseModule],
-  components: [AuthService, JwtStrategy, ...authProviders],
+  imports: [TypeOrmModule.forFeature([User])],
+  components: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule implements NestModule {

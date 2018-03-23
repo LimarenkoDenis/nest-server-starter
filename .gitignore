@@ -13,3 +13,4 @@ dump/.DS_Store
 docs/**/*.html
 build-params.xml
 package-lock.json
+ormconfig.json

@@ -1,32 +1,34 @@
-import { Component, Inject } from '@nestjs/common';
-import { CreateCatDto } from './dto/create-cat.dto';
+import { Component } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Cat } from './schemas/cat.entity';
+import { CreateCatDto } from './dto/create-cat.dto';
 
 @Component()
 export class CatsService {
   public constructor(
-    @Inject('CatModelToken') private readonly _catModel: typeof Cat,
+    @InjectRepository(Cat) private readonly _catModel: Repository<Cat>,
   ) {}
 
   public async getCats(): Promise<Cat[]> {
-    return await this._catModel.findAll<Cat>();
+    return await this._catModel.find();
   }
 
   // tslint:disable-next-line: no-any
-  public async getCat(query: any): Promise<Cat | null> {
-    let cat: Cat | null;
+  public async getCat(query: any): Promise<Cat | undefined> {
+    let cat: Cat | undefined;
     try {
-      cat = await this._catModel.findOne<Cat>({ where: query });
+      cat = await this._catModel.findOne(query);
     } catch (err) {
       // tslint:disable-next-line
       console.log(err);
-      cat = null;
+      cat = undefined;
     }
     return cat;
   }
 
   public async createCat(createCatDto: CreateCatDto): Promise<Cat> {
-    return await this._catModel.build<Cat>(createCatDto).save();
+    return await this._catModel.create(createCatDto);
   }
 
 }
