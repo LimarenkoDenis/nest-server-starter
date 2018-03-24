@@ -6,9 +6,9 @@ To check out the [guide](https://docs.nestjs.com), visit [docs.nestjs.com](https
 
 
 ## With different ORM
- - [Sequalise](https://github.com/JsDaddy/Tokenize-server/tree/develop), [Docs](https://github.com/sequelize/sequelize)
- - [typeorm](https://github.com/JsDaddy/Tokenize-server/tree/typeorm), [Docs](https://github.com/typeorm/typeorm)
- - [mongoose](https://github.com/JsDaddy/Tokenize-server/tree/master), [Docs](https://github.com/Automattic/mongoose)
+ - [Sequalise](https://github.com/JsDaddy/nest-server-starter/tree/develop), [Docs](https://github.com/sequelize/sequelize)
+ - [typeorm](https://github.com/JsDaddy/nest-server-starter/tree/typeorm), [Docs](https://github.com/typeorm/typeorm)
+ - [mongoose](https://github.com/JsDaddy/nest-server-starter/tree/master), [Docs](https://github.com/Automattic/mongoose)
 
 
 ## Development server
