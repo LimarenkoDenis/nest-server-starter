@@ -5,6 +5,12 @@
 To check out the [guide](https://docs.nestjs.com), visit [docs.nestjs.com](https://docs.nestjs.com).
 
 
+## With different ORM
+ - [Sequalise](https://github.com/JsDaddy/Tokenize-server/tree/develop), [Docs](https://github.com/sequelize/sequelize)
+ - [typeorm](https://github.com/JsDaddy/Tokenize-server/tree/typeorm), [Docs](https://github.com/typeorm/typeorm)
+ - [mongoose](https://github.com/JsDaddy/Tokenize-server/tree/master), [Docs](https://github.com/Automattic/mongoose)
+
+
 ## Development server
  - install docker
  - Create config `src/config`
