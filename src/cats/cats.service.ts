@@ -28,7 +28,8 @@ export class CatsService {
   }
 
   public async createCat(createCatDto: CreateCatDto): Promise<Cat> {
-    return await this._catModel.create(createCatDto);
+    const cat: Cat = await this._catModel.create(createCatDto);
+    return await this._catModel.save(cat);
   }
 
 }

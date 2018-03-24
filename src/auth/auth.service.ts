@@ -41,7 +41,8 @@ export class AuthService {
 
   public async createUser(createUserDto: CreateUserDto): Promise<UserData> {
     const user: User = await this._userModel.create(createUserDto);
-    return await this.createToken(user);
+    const newUser: User = await this._userModel.save(user);
+    return await this.createToken(newUser);
   }
 
   // tslint:disable-next-line

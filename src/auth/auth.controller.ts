@@ -57,6 +57,7 @@ export class AuthController {
     if (!user || user && !await bcrypt.compare(loginUserDto.password, user.password)) {
       return res.status(HttpStatus.UNAUTHORIZED).json({ data: { message: 'UNAUTHORIZED' } });
     }
+    delete user.password;
 
     return res.status(HttpStatus.OK).json({ data: user});
   }
