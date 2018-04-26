@@ -1,0 +1,8 @@
+extends ./layout
+
+block content
+  p Hello!
+
+  ul
+    each val in courses
+      li= val.title
